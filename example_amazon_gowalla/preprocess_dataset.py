@@ -5,6 +5,7 @@ import os
 import argparse
 from utils import EarlyStopMonitor, RandEdgeSampler, get_neighbor_finder
 import random
+import torch_geometric
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -17,6 +18,7 @@ def set_seed(seed=0):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+    torch_geometric.seed_everything(seed)
 
 
 def main():

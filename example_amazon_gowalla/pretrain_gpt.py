@@ -7,8 +7,20 @@ from GPT_GNN.data import args_print
 
 import argparse
 import os
+import random
+import torch_geometric
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+def set_seed(seed=0):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch_geometric.seed_everything(seed)
 
 parser = argparse.ArgumentParser(description='Pre-training HGT on a given graph (heterogeneous / homogeneous)')
 
@@ -78,10 +90,12 @@ parser.add_argument('--clip', type=float, default=0.5,
 parser.add_argument('--data_type', type=str, default="amazon", help='Type of dataset')
 parser.add_argument('--task_type', type=str, default="time_trans", help='Type of task')
 parser.add_argument('-d', '--data', type=str, help='Dataset name', default='amazon_beauty')
+parser.add_argument('--seed', type=int, default=0, help='Seed for all')
 
 args = parser.parse_args()
 args_print(args)
 
+set_seed(args.seed)
 
 if args.cuda != -1:
     device = torch.device("cuda:" + str(args.cuda))

@@ -14,8 +14,20 @@ from sklearn.metrics import average_precision_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
 import os
+import random
+import torch_geometric
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+def set_seed(seed=0):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch_geometric.seed_everything(seed)
 
 parser = argparse.ArgumentParser(description='Fine-Tuning on Reddit classification task')
 
@@ -78,9 +90,12 @@ parser.add_argument('--clip', type=int, default=0.5,
 parser.add_argument('--data_type', type=str, default="amazon", help='Type of dataset')
 parser.add_argument('--task_type', type=str, default="time_trans", help='Type of task')
 parser.add_argument('-d', '--data', type=str, help='Dataset name', default='amazon_beauty')
+parser.add_argument('--seed', type=int, default=0, help='Seed for all')
 
 args = parser.parse_args()
 args_print(args)
+
+set_seed(args.seed)
 
 if args.cuda != -1:
     device = torch.device("cuda:" + str(args.cuda))
@@ -204,7 +219,7 @@ def node_classification_sample(seed, nodes, time_range, stage='train'):
             neg_x_ids = np.array(neg_x_ids)
         
             feature, times, edge_list, _, texts = sample_subgraph(graph, time_range, \
-                    inp = {target_type: np.concatenate([val_src, val_dst, val_neg, np.ones(val_src.shape[0] * 3)]).reshape(2, -1).transpose()}, \
+                    inp = {target_type: np.concatenate([np.array(all_nodes_list), np.ones(len(all_nodes_list))]).reshape(2, -1).transpose()}, \
                     sampled_depth = args.sample_depth, sampled_number = args.sample_width, feature_extractor = feature_reddit)
         
             node_feature, node_type, edge_time, edge_index, edge_type, node_dict, edge_dict = \
@@ -237,7 +252,7 @@ def node_classification_sample(seed, nodes, time_range, stage='train'):
             neg_x_ids = np.array(neg_x_ids)
 
             feature, times, edge_list, _, texts = sample_subgraph(graph, time_range, \
-                    inp = {target_type: np.concatenate([test_src, test_dst, test_neg, np.ones(test_src.shape[0] * 3)]).reshape(2, -1).transpose()}, \
+                    inp = {target_type: np.concatenate([np.array(all_nodes_list), np.ones(len(all_nodes_list))]).reshape(2, -1).transpose()}, \
                     sampled_depth = args.sample_depth, sampled_number = args.sample_width, feature_extractor = feature_reddit)
         
             node_feature, node_type, edge_time, edge_index, edge_type, node_dict, edge_dict = \
