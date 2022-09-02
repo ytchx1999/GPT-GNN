@@ -95,7 +95,7 @@ parser.add_argument('--seed', type=int, default=0, help='Seed for all')
 args = parser.parse_args()
 args_print(args)
 
-set_seed(args.seed)
+# set_seed(args.seed)
 
 if args.cuda != -1:
     device = torch.device("cuda:" + str(args.cuda))
