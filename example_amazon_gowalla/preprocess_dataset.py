@@ -51,7 +51,7 @@ def main():
     parser.add_argument('--base_dir', type=str, default="/home/hadoop-aipnlp/dolphinfs/hdd_pool/data/chihuixuan/dgl-lp-baseline/", help='Base dir of dataset')
 
     args = parser.parse_args()
-    # set_seed(args.seed)
+    set_seed(args.seed)
 
     n_feats, full_data, train_data, val_data, test_data, new_node_val_data, new_node_test_data = get_data_no_label(args.data,
                               different_new_nodes_between_val_and_test=args.different_new_nodes, randomize_features=args.randomize_features, \
