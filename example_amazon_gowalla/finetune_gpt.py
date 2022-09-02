@@ -389,7 +389,6 @@ print('-'*50)
 print(("Final Valid ap: %.4f Valid auc: %.4f Valid f1_micro: %.4f Valid f1_macro: %.4f") % \
     (best_val_res['ap'], best_val_res['auc'], best_val_res['f1_micro'], best_val_res['f1_macro']))
 print('-'*50)
-    
 
 best_model = torch.load('./models/gpt_downstream_{}_{}.pk'.format(args.data, args.task_type)).to(device)
 best_model.eval()
@@ -403,7 +402,7 @@ with torch.no_grad():
         node_feature, node_type, edge_time, edge_index, edge_type, x_ids, pos_x_ids, neg_x_ids = \
                     node_classification_sample(randint(), test_target_nodes, {1: True}, 'test')
         paper_rep = gnn.forward(node_feature.to(device), node_type.to(device), \
-                    edge_time.to(device), edge_index.to(device), edge_type.to(device))[x_ids]
+                    edge_time.to(device), edge_index.to(device), edge_type.to(device))
 
         res = paper_rep[x_ids]
         pos = paper_rep[pos_x_ids]
